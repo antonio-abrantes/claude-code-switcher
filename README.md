@@ -5,12 +5,14 @@
 # `ccs` — Claude Code Switcher
 
 **Switch LLM providers in Claude Code with one command.**  
-No config files touched. No mess. No restarts.
+No config files touched. No mess. No restarts.  
+*(Now with **Native Model Pinning**: Save tokens and cut costs by locking the official Anthropic client to your chosen models—like Haiku and Sonnet—preventing expensive automatic switches to Opus!)*
 
 [![bash](https://img.shields.io/badge/shell-bash-4EAA25?style=flat-square&logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash/)
 [![requires jq](https://img.shields.io/badge/requires-jq-333?style=flat-square&logo=json&logoColor=white)](https://stedolan.github.io/jq/)
 [![requires curl](https://img.shields.io/badge/requires-curl-073551?style=flat-square&logo=curl&logoColor=white)](https://curl.se/)
 [![license MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![changelog](https://img.shields.io/badge/changelog-v1.0.0-orange?style=flat-square)](CHANGELOG.md)
 
 </div>
 
@@ -130,6 +132,7 @@ If you want to dive deeper into all the features of CCS, check out the detailed 
 - 📉 **[Cost Optimization Guide](docs/model-optimization-guide.md)** — How to lock models and save API tokens effectively.
 - 🔀 **[About CCS (Under the Hood)](docs/about.md)** — Understand how CCS works and why it was built.
 - 🗑️ **[Uninstall Guide](docs/uninstall.md)** — How to fully remove CCS (with or without keeping your saved profiles).
+- 📜 **[Changelog](CHANGELOG.md)** — View the full release history, updates, and recent enhancements.
 
 ---
 
@@ -177,6 +180,19 @@ Switching providers = updating the symlink. That's the whole trick.
 - **[jq](https://jqlang.org/)** — for `current`, `key`, and `test`
 - **[curl](https://curl.se/)** — for `test` and the installer
 - **PowerShell 5.1+** — Windows only
+
+---
+
+## ⚖️ Credits & Acknowledgements
+
+This repository is a heavily enhanced and expanded fork of the original [claude-code-switcher](https://github.com/lizzyman04/claude-code-switcher) created by **[lizzyman04](https://github.com/lizzyman04)**.
+
+### What we added in this fork:
+- 🪟 **Native Windows Support**: Full PowerShell wrappers, installers, and symlink helpers.
+- 📌 **Model Pinning**: Pin your official client to custom cost-effective models (like Claude 3.5 Haiku) to save API tokens.
+- 🤖 **Local Models Integration**: Extensive guides for hooking up Ollama via LiteLLM proxies.
+- 🎮 **Interactive Architecture Guides**: Developed comprehensive visual and interactive explanation pages for easy deployment.
+- 🚀 **Simplified Installers**: Streamlined online installation scripts for Windows, macOS, and Linux.
 
 ---
 
