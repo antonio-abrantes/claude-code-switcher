@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Switcher (CCS) — Multi-Provider Orchestrator</title>
+  
+  <!-- Fontes Premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* --- SISTEMA DE DESIGN & CORES --- */
+    :root {
+      --bg: #070a13;
+      --card-bg: rgba(13, 18, 33, 0.75);
+      --card-border: rgba(255, 255, 255, 0.06);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --cyan: #06b6d4;
+      --indigo: #6366f1;
+      --purple: #a855f7;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --gradient: linear-gradient(135deg, #06b6d4 0%, #6366f1 50%, #a855f7 100%);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 40%);
+      padding-top: 80px; /* Espaço para o header fixo */
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* --- HEADER FIXO / NAV --- */
+    header.sticky-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: rgba(7, 10, 19, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--card-border);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .logo-area svg {
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.5));
+    }
+
+    .logo-text {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .github-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-decoration: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .github-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .github-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .star-badge {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--cyan);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* --- HERO --- */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: var(--cyan);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 20px;
+      font-family: 'Outfit', sans-serif;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 750px;
+      margin: 0 auto 30px;
+      font-weight: 300;
+    }
+
+    .quick-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    /* --- ANALOGIA SIMPLES (INTRO) --- */
+    .intro-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 60px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .intro-card {
+        grid-template-columns: 1fr;
+        padding: 25px;
+      }
+    }
+
+    .intro-text h2 {
+      font-size: 2rem;
+      color: var(--cyan);
+    }
+
+    .intro-text p {
+      color: var(--text-muted);
+      margin-bottom: 15px;
+      font-size: 1.05rem;
+    }
+
+    .analogy-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-left: 4px solid var(--indigo);
+      padding: 24px;
+      border-radius: 0 16px 16px 0;
+    }
+
+    .analogy-title {
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+    }
+
+    /* --- INSTALADOR COM TABS --- */
+    .install-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 60px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      backdrop-filter: blur(12px);
+    }
+
+    .install-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .install-title h2 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .tab-container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .tab-buttons {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 24px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      color: var(--cyan);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .install-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+
+    .terminal-box {
+      background: #03050a;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    .terminal-command {
+      color: #06b6d4;
+      font-size: 0.9rem;
+      word-break: break-all;
+      padding-right: 40px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .copy-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .copy-tooltip {
+      position: absolute;
+      top: -35px;
+      right: 10px;
+      background: var(--emerald);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(5px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .copy-tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* --- BOARD INTERATIVO --- */
+    .dashboard {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      margin-bottom: 60px;
+    }
+
+    .dashboard-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .dashboard-title h2 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .dashboard-title p {
+      color: var(--text-muted);
+    }
+
+    .interactive-board {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 40px;
+      min-height: 420px;
+    }
+
+    @media (max-width: 992px) {
+      .interactive-board {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-container {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .flow-svg {
+      width: 100%;
+      height: 100%;
+      min-height: 280px;
+    }
+
+    /* Estilos do SVG */
+    .node {
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .node:hover {
+      transform: scale(1.08);
+    }
+
+    .node-circle {
+      fill: #131929;
+      stroke: var(--card-border);
+      stroke-width: 2;
+      transition: all 0.3s ease;
+    }
+
+    .node.active .node-circle {
+      fill: rgba(99, 102, 241, 0.2);
+      stroke: var(--indigo);
+      stroke-width: 3;
+      filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.6));
+    }
+
+    .node.completed .node-circle {
+      stroke: var(--cyan);
+    }
+
+    .flow-line {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.07);
+      stroke-width: 3;
+      stroke-dasharray: 6 4;
+      transition: stroke 0.3s ease;
+    }
+
+    .flow-line.active {
+      stroke: var(--indigo);
+    }
+
+    .flow-line.completed {
+      stroke: var(--cyan);
+      stroke-dasharray: none;
+    }
+
+    .signal-particle {
+      fill: var(--cyan);
+      filter: drop-shadow(0 0 8px var(--cyan));
+      opacity: 0;
+    }
+
+    .signal-particle.moving {
+      opacity: 1;
+    }
+
+    /* Painel de Explicação */
+    .explanation-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 30px;
+      border-radius: 16px;
+    }
+
+    .step-number {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 0.1em;
+    }
+
+    .explanation-content h3 {
+      font-size: 1.6rem;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+
+    .explanation-content p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 20px;
+      min-height: 110px;
+    }
+
+    .code-snippet {
+      background: #03050a;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--cyan);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.2s ease;
+      text-align: center;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      text-decoration: none;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* --- PILARES EXPLICATIVOS --- */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 60px;
+    }
+
+    .pillar-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 30px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pillar-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--indigo);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .pillar-card:hover::before {
+      opacity: 1;
+    }
+
+    .pillar-icon {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      display: inline-block;
+    }
+
+    .pillar-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .pillar-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* --- CENTRAL DE DOCUMENTAÇÃO (NOVO) --- */
+    .docs-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 60px;
+    }
+
+    .docs-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 30px;
+      color: #fff;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .doc-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 24px;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .doc-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .doc-icon {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+
+    .doc-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .doc-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 15px;
+      flex-grow: 1;
+    }
+
+    .doc-arrow {
+      color: var(--cyan);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* --- NOTA DE SEGURANÇA / USO LOCAL (NOVO) --- */
+    .security-note {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.04) 0%, rgba(99, 102, 241, 0.04) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 60px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .security-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .security-text h3 {
+      font-size: 1.3rem;
+      color: var(--cyan);
+      margin-bottom: 8px;
+    }
+
+    .security-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* --- PERGUNTAS FREQUENTES (FAQ) --- */
+    .faq-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 60px;
+    }
+
+    .faq-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 40px;
+      color: #fff;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .faq-item {
+      background: rgba(255,255,255,0.015);
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 25px;
+      border-radius: 16px;
+    }
+
+    .faq-item h3 {
+      font-size: 1.15rem;
+      color: var(--cyan);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .faq-item p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* --- RODAPÉ --- */
+    footer {
+      text-align: center;
+      padding: 45px 20px;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer p a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    footer p a:hover {
+      text-decoration: underline;
+    }
+
+    /* --- RESPONSIVIDADE ADICIONAL --- */
+    @media (max-width: 768px) {
+      body {
+        padding-top: 70px;
+      }
+      header.sticky-header {
+        height: 70px;
+      }
+      .logo-text {
+        font-size: 1.1rem;
+      }
+      .hero h1 {
+        font-size: 2.3rem;
+      }
+      .hero p {
+        font-size: 1.05rem;
+      }
+      .install-section {
+        padding: 25px 20px;
+      }
+      .dashboard {
+        padding: 25px 20px;
+      }
+      .canvas-container {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER FIXO (STICKY NAV) -->
+  <header class="sticky-header">
+    <div class="nav-container">
+      <a href="#" class="logo-area">
+        <!-- Ícone SVG de Engrenagem / IA integrada -->
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#06b6d4" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="#6366f1" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="#a855f7" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <span class="logo-text">CCS</span>
+      </a>
+      
+      <div class="nav-actions">
+        <!-- Badge indicando as estrelas no GitHub -->
+        <a href="https://github.com/antonio-abrantes/claude-code-switcher" target="_blank" class="github-btn">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          GitHub <span class="star-badge">★ Star</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- HERO / TITULO -->
+    <section class="hero">
+      <span class="hero-badge">Orquestrador Inteligente</span>
+      <h1>Troque de Provedor de IA com Um Comando</h1>
+      <p>O **Claude Code Switcher (CCS)** intercepta e redireciona dinamicamente a ferramenta oficial Claude Code para modelos locais, DeepSeek, OmniRoute e outros, sem alterar seus arquivos originais.</p>
+      
+      <div class="quick-links">
+        <a href="#install-card" class="btn btn-primary" style="max-width: 250px;">Instalação Rápida</a>
+        <a href="#interactive-flow" class="btn btn-secondary" style="max-width: 250px;">Como Funciona?</a>
+      </div>
+    </section>
+
+    <!-- INTRODUÇÃO / ANALOGIA (ORGANIZADA LOGICAMENTE) -->
+    <section class="intro-card">
+      <div class="intro-text">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+          <img src="../assets/CCS.png" alt="CCS Logo" style="width: 54px; height: auto; border-radius: 10px; filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.45));" />
+          <h2 style="margin: 0; font-size: 2rem; color: var(--cyan);">O que é o CCS?</h2>
+        </div>
+        <p>Imagine que você tem uma TV de última geração chamada **Claude Code**. Por padrão, essa TV vem de fábrica travada apenas nos canais de uma única programadora (a **Anthropic**).</p>
+        <p>O **Claude Code Switcher (CCS)** é como um **Controle Remoto Universal Inteligente** que criamos. Com apenas um botão, ele destrava a TV e permite que você assista canais de qualquer outra programadora (como o **DeepSeek**, **OmniRoute** ou até mesmo o **seu próprio computador local**), sem que você precise desmontar a TV ou mudar os fios de lugar.</p>
+      </div>
+      
+      <div class="analogy-box">
+        <div class="analogy-title">
+          <span>🎮</span> A Grande Sacada
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+          Nós não alteramos o programa oficial da Anthropic. Nós simplesmente mudamos as configurações ambientais ao redor dele. Quando o Claude Code acorda, ele lê as nossas configurações e acha que está falando com os servidores normais da nuvem, mas na verdade está sendo direcionado para o provedor que você escolheu!
+        </p>
+      </div>
+    </section>
+
+    <!-- ABA DE INSTALAÇÃO (NOVA) -->
+    <section id="install-card" class="install-section">
+      <div class="install-title">
+        <h2>Instalação em Poucos Segundos</h2>
+        <p>Selecione o seu sistema operacional e cole o comando no seu terminal.</p>
+      </div>
+
+      <div class="tab-container">
+        <!-- Abas -->
+        <div class="tab-buttons">
+          <button class="tab-btn active" onclick="switchTab(event, 'win')">Windows</button>
+          <button class="tab-btn" onclick="switchTab(event, 'mac')">macOS</button>
+          <button class="tab-btn" onclick="switchTab(event, 'linux')">Linux</button>
+        </div>
+
+        <!-- Conteúdo Windows -->
+        <div id="tab-win" class="tab-content active">
+          <p class="install-desc">Execute no **PowerShell (como Administrador)** para instalar automaticamente e injetar a interceptação:</p>
+          <div class="terminal-box">
+            <span class="terminal-command" id="cmd-win">irm -useb https://raw.githubusercontent.com/antonio-abrantes/claude-code-switcher/main/install.ps1 | iex</span>
+            <button class="copy-btn" onclick="copyCommand('cmd-win', 'tip-win')" title="Copiar Comando">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+            <div id="tip-win" class="copy-tooltip">Copiado!</div>
+          </div>
+          <p class="install-desc" style="margin-top: 15px; font-size: 0.85rem;">*Nota: Se preferir clonar o código local e testar:*</p>
+          <div class="terminal-box">
+            <span class="terminal-command" id="cmd-win-local">git clone https://github.com/antonio-abrantes/claude-code-switcher.git; cd claude-code-switcher; .\install-local.ps1</span>
+            <button class="copy-btn" onclick="copyCommand('cmd-win-local', 'tip-win-local')" title="Copiar Comando">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+            <div id="tip-win-local" class="copy-tooltip">Copiado!</div>
+          </div>
+        </div>
+
+        <!-- Conteúdo macOS -->
+        <div id="tab-mac" class="tab-content">
+          <p class="install-desc">Abra o terminal do seu Mac e rode o comando abaixo para realizar a instalação remota:</p>
+          <div class="terminal-box">
+            <span class="terminal-command" id="cmd-mac">curl -fsSL https://raw.githubusercontent.com/antonio-abrantes/claude-code-switcher/main/install.sh | bash</span>
+            <button class="copy-btn" onclick="copyCommand('cmd-mac', 'tip-mac')" title="Copiar Comando">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+            <div id="tip-mac" class="copy-tooltip">Copiado!</div>
+          </div>
+        </div>
+
+        <!-- Conteúdo Linux -->
+        <div id="tab-linux" class="tab-content">
+          <p class="install-desc">Abra seu terminal Linux (Bash/Zsh) e execute o script automatizado:</p>
+          <div class="terminal-box">
+            <span class="terminal-command" id="cmd-linux">curl -fsSL https://raw.githubusercontent.com/antonio-abrantes/claude-code-switcher/main/install.sh | bash</span>
+            <button class="copy-btn" onclick="copyCommand('cmd-linux', 'tip-linux')" title="Copiar Comando">
+              <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            </button>
+            <div id="tip-linux" class="copy-tooltip">Copiado!</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOARD INTERATIVO -->
+    <section id="interactive-flow" class="dashboard">
+      <div class="dashboard-title">
+        <h2>Diagrama Interativo do Ciclo de Mensagem</h2>
+        <p>Clique nos botões "Anterior" e "Próximo", ou selecione as etapas diretamente no gráfico para ver como a mágica acontece!</p>
+      </div>
+
+      <div class="interactive-board">
+        
+        <!-- SVG Canvas (Gráfico Dinâmico) -->
+        <div class="canvas-container">
+          <svg class="flow-svg" viewBox="0 0 800 240">
+            <!-- Definições de Gradientes e Filtros de Brilho -->
+            <defs>
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <!-- Linhas de Fluxo Conectando Nós -->
+            <path id="line1" class="flow-line" d="M 100 120 Q 200 80 300 120" />
+            <path id="line2" class="flow-line" d="M 300 120 Q 400 160 500 120" />
+            <path id="line3" class="flow-line" d="M 500 120 Q 600 80 700 120" />
+            <path id="line4" class="flow-line" d="M 700 120 Q 750 120 780 120" />
+
+            <!-- Partícula de Sinal Animada (Viajando entre nós) -->
+            <circle id="signal" class="signal-particle" r="6" />
+
+            <!-- NÓ 1: Digitar claude -->
+            <g id="node1" class="node active" onclick="selectStep(1)">
+              <circle class="node-circle" cx="100" cy="120" r="28" />
+              <text x="100" y="125" font-family="Outfit" font-size="16" fill="#fff" text-anchor="middle">💻</text>
+              <text x="100" y="170" font-family="Inter" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="500">1. Digitar</text>
+            </g>
+
+            <!-- NÓ 2: O Interceptador (Filtro) -->
+            <g id="node2" class="node" onclick="selectStep(2)">
+              <circle class="node-circle" cx="300" cy="120" r="28" />
+              <text x="300" y="125" font-family="Outfit" font-size="16" fill="#fff" text-anchor="middle">🛡️</text>
+              <text x="300" y="170" font-family="Inter" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="500">2. Filtro</text>
+            </g>
+
+            <!-- NÓ 3: O Atalho Ativo (Active Link) -->
+            <g id="node3" class="node" onclick="selectStep(3)">
+              <circle class="node-circle" cx="500" cy="120" r="28" />
+              <text x="500" y="125" font-family="Outfit" font-size="16" fill="#fff" text-anchor="middle">🔗</text>
+              <text x="500" y="170" font-family="Inter" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="500">3. Atalho</text>
+            </g>
+
+            <!-- NÓ 4: Claude Code Iniciando -->
+            <g id="node4" class="node" onclick="selectStep(4)">
+              <circle class="node-circle" cx="700" cy="120" r="28" />
+              <text x="700" y="125" font-family="Outfit" font-size="16" fill="#fff" text-anchor="middle">🚀</text>
+              <text x="700" y="170" font-family="Inter" font-size="11" fill="#9ca3af" text-anchor="middle" font-weight="500">4. Destino</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Painel Lateral de Explicações -->
+        <div class="explanation-panel">
+          <div class="explanation-content">
+            <div id="step-badge" class="step-number">Etapa 1 de 4</div>
+            <h3 id="step-title">Você digita "claude"</h3>
+            <p id="step-desc">Tudo começa no terminal normal do seu computador. Você simplesmente digita o comando para iniciar a IA, exatamente como faria no dia a dia, sem nenhum comando longo ou chato.</p>
+            
+            <div class="code-snippet">
+              <span id="step-code">C:\> claude</span>
+              <span style="color: var(--text-muted); font-size: 0.75rem;">Terminal</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="btn-prev" class="btn btn-secondary" onclick="prevStep()" disabled>Anterior</button>
+            <button id="btn-next" class="btn btn-primary" onclick="nextStep()">Próximo</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PILARES DE FUNCIONAMENTO -->
+    <section>
+      <div style="text-align: center; margin-bottom: 40px;">
+        <h2 style="font-size: 2rem;">Os 3 Pilares do Claude Switcher</h2>
+        <p style="color: var(--text-muted);">Como nossa abordagem simples e limpa resolve o problema sem bagunçar seu sistema.</p>
+      </div>
+
+      <div class="pillars">
+        
+        <div class="pillar-card">
+          <span class="pillar-icon">🔒</span>
+          <h3>Zero Modificação de Arquivos</h3>
+          <p>Nós não alteramos o executável original do Claude Code e não apagamos suas configurações de login. O programa oficial permanece intocado e seguro na sua máquina.</p>
+        </div>
+
+        <div class="pillar-card">
+          <span class="pillar-icon">⚡</span>
+          <h3>A Interceptação Inteligente</h3>
+          <p>Instalamos um pequeno "filtro" (chamado de alias no Linux/Mac e wrapper function no Windows). Ele simplesmente complementa o comando `claude` adicionando o atalho do perfil ativo por trás dos panos.</p>
+        </div>
+
+        <div class="pillar-card">
+          <span class="pillar-icon">🔗</span>
+          <h3>A Ponte Física (Symlink)</h3>
+          <p>O segredo está em uma ponte física no seu disco (um atalho de pasta chamado `active`). Mudar de IA com o `ccs switch` apenas altera para onde esse atalho está apontando, em menos de 1 milissegundo!</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CENTRAL DE DOCUMENTAÇÃO (NOVA) -->
+    <section id="docs-hub" class="docs-section">
+      <h2>Central de Documentação do Projeto</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 45px; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Quer se aprofundar em casos de uso específicos ou precisa de ajuda técnica? Confira nossos guias detalhados diretamente no repositório.
+      </p>
+      
+      <div class="docs-grid">
+        
+        <a href="https://github.com/antonio-abrantes/claude-code-switcher/blob/main/docs/usage-guide.md" target="_blank" class="doc-card">
+          <div>
+            <div class="doc-icon">📖</div>
+            <h3>Manual de Uso</h3>
+            <p>Aprenda a utilizar comandos como switch, add, edit, test e o modo efêmero avançado.</p>
+          </div>
+          <span class="doc-arrow">Ler guia &rarr;</span>
+        </a>
+
+        <a href="https://github.com/antonio-abrantes/claude-code-switcher/blob/main/docs/installation-guide.md" target="_blank" class="doc-card">
+          <div>
+            <div class="doc-icon">🛠️</div>
+            <h3>Guia de Instalação</h3>
+            <p>Instruções completas para configuração em Windows PowerShell, macOS, Linux e VPS corporativos.</p>
+          </div>
+          <span class="doc-arrow">Ler guia &rarr;</span>
+        </a>
+
+        <a href="https://github.com/antonio-abrantes/claude-code-switcher/blob/main/docs/omniroute-guide.md" target="_blank" class="doc-card">
+          <div>
+            <div class="doc-icon">🚀</div>
+            <h3>OmniRoute</h3>
+            <p>Saiba como configurar e rotear requisições para a API e os modelos do ecossistema OmniRoute.</p>
+          </div>
+          <span class="doc-arrow">Ler guia &rarr;</span>
+        </a>
+
+        <a href="https://github.com/antonio-abrantes/claude-code-switcher/blob/main/docs/model-optimization-guide.md" target="_blank" class="doc-card">
+          <div>
+            <div class="doc-icon">📉</div>
+            <h3>Redução de Custos</h3>
+            <p>Como travar modelos (como Haiku ou Sonnet) para evitar gastos indesejados na sua chave Anthropic.</p>
+          </div>
+          <span class="doc-arrow">Ler guia &rarr;</span>
+        </a>
+
+        <a href="https://github.com/antonio-abrantes/claude-code-switcher/blob/main/docs/local-models-guide.md" target="_blank" class="doc-card">
+          <div>
+            <div class="doc-icon">🤖</div>
+            <h3>Modelos Locais</h3>
+            <p>Guia definitivo para rodar o Claude Code localmente via Ollama (Qwen, Llama) usando o LiteLLM.</p>
+          </div>
+          <span class="doc-arrow">Ler guia &rarr;</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- NOTA DE SEGURANÇA E USO LOCAL (NOVA) -->
+    <section class="security-note">
+      <div class="security-icon">🛡️</div>
+      <div class="security-text">
+        <h3>Nota Importante: Uso Local & Privacidade Absoluta</h3>
+        <p>O Claude Code Switcher (CCS) é um utilitário utilitário de orquestração local que é executado **100% no seu próprio computador**. Ele **não coleta dados**, **não intercepta tráfego de rede** e **não transmite suas chaves de API** para nenhum servidor externo. Suas credenciais são guardadas de forma limpa em arquivos de configuração locais em seu diretório de usuário e são gerenciadas apenas pela própria ferramenta nativa Claude Code da Anthropic.</p>
+      </div>
+    </section>
+
+    <!-- PERGUNTAS FREQUENTES -->
+    <section class="faq-section">
+      <h2>Perguntas Comuns de Usuários</h2>
+      
+      <div class="faq-grid">
+        
+        <div class="faq-item">
+          <h3><span>🛡️</span> Minhas chaves de API estão seguras?</h3>
+          <p>Sim, 100% seguras. Todos os perfis e chaves de API que você configura são salvos diretamente em uma pasta oculta no seu próprio computador (`~/.config/claude-profiles/`). O CCS não envia nenhuma informação para fora, não possui servidores externos de coleta e é totalmente privado.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3><span>🤖</span> Como ele consegue rodar inteligências locais?</h3>
+          <p>Modelos locais rodando no seu computador (via Ollama) se disfarçam de servidores de nuvem. Usamos um programa leve de tradução (o LiteLLM) que traduz o idioma que o Claude Code fala (API Anthropic) para o idioma que o seu modelo local entende. É uma tradução simultânea em tempo real!</p>
+        </div>
+
+        <div class="faq-item">
+          <h3><span>🔄</span> Como volto para o Claude original da nuvem?</h3>
+          <p>É incrivelmente fácil. Basta digitar `ccs off` ou `ccs switch anthropic`. O CCS desativará o atalho e o Claude voltará imediatamente a falar direto com os servidores oficiais da Anthropic como se nada tivesse acontecido.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3><span>⚠️</span> Por que modelos locais pequenos falham?</h3>
+          <p>Modelos locais pequenos (de 3B ou 7B parâmetros) são ótimos para chats simples, mas o Claude Code exige muito raciocínio para criar e ler arquivos de código. Modelos menores não conseguem processar essas instruções complexas e ficam "confusos" ou em loops. Não é um problema do CCS, mas sim o limite de força do modelo local escolhido.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RODAPÉ -->
+    <footer>
+      <p style="margin-top: 10px; font-size: 0.8rem;">Claude Code Switcher (CCS) — Guia de Arquitetura Visual</p>
+    </footer>
+
+  </div>
+
+  <!-- LÓGICA DE ANIMAÇÃO E INTERAÇÃO -->
+  <script>
+    // --- LÓGICA DAS TABS DE INSTALAÇÃO ---
+    function switchTab(event, os) {
+      // Remove ativa de todos os botões e conteúdos
+      const buttons = event.target.parentElement.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      
+      const contents = event.target.parentElement.parentElement.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active'));
+      
+      // Ativa o correto
+      event.target.classList.add('active');
+      document.getElementById(`tab-${os}`).classList.add('active');
+    }
+
+    // --- LÓGICA DO BOTÃO DE COPIAR ---
+    function copyCommand(elementId, tooltipId) {
+      const text = document.getElementById(elementId).innerText;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const tooltip = document.getElementById(tooltipId);
+        tooltip.classList.add('show');
+        
+        setTimeout(() => {
+          tooltip.classList.remove('show');
+        }, 2000);
+      }).catch(err => {
+        console.error('Falha ao copiar comando: ', err);
+      });
+    }
+
+    // --- LÓGICA DO DIAGRAMA DE ETAPAS ---
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    const steps = {
+      1: {
+        title: "Você digita 'claude'",
+        desc: "Tudo começa no terminal normal do seu computador. Você simplesmente digita o comando para iniciar a IA, exatamente como faria no dia a dia, sem precisar digitar configurações gigantes ou comandos chatos.",
+        code: "C:\\> claude"
+      },
+      2: {
+        title: "O Interceptador entra em ação",
+        desc: "O seu computador foi ensinado pelo instalador do CCS a filtrar o comando 'claude'. Ele captura a palavra e, de forma invisível, adiciona um ingrediente secreto por trás: a instrução de ler as nossas configurações.",
+        code: "claude --settings C:\\...\\active"
+      },
+      3: {
+        title: "O Atalho Físico (Ponte Active)",
+        desc: "O Claude vai até a pasta secreta ler as configurações. Lá ele encontra a ponte chamada 'active' (um atalho do Windows). Se você ativou o DeepSeek, essa ponte direciona o Claude para o arquivo do DeepSeek; se ativou o Local, direciona para o seu computador.",
+        code: "active -> profiles/deepseek.json"
+      },
+      4: {
+        title: "Mensagem chega ao cérebro final",
+        desc: "Pronto! O Claude Code acorda lendo os dados do provedor escolhido. Suas mensagens são enviadas diretamente para a URL configurada no perfil ativo, e a resposta volta direto para a sua tela. Zero configurações manuais!",
+        code: "Enviar para: http://localhost:4000"
+      }
+    };
+
+    function selectStep(stepNum) {
+      if (stepNum < 1 || stepNum > totalSteps) return;
+      
+      const prevStep = currentStep;
+      currentStep = stepNum;
+      
+      // Atualiza os botões
+      document.getElementById('btn-prev').disabled = currentStep === 1;
+      document.getElementById('btn-next').innerText = currentStep === totalSteps ? "Concluído" : "Próximo";
+      document.getElementById('btn-next').disabled = false;
+
+      // Atualiza Classes dos Nós Visualmente no SVG
+      for (let i = 1; i <= totalSteps; i++) {
+        const node = document.getElementById(`node${i}`);
+        if (i === currentStep) {
+          node.setAttribute('class', 'node active');
+        } else if (i < currentStep) {
+          node.setAttribute('class', 'node completed');
+        } else {
+          node.setAttribute('class', 'node');
+        }
+      }
+
+      // Atualiza Classes das Linhas
+      for (let i = 1; i < totalSteps; i++) {
+        const line = document.getElementById(`line${i}`);
+        if (i < currentStep) {
+          line.setAttribute('class', 'flow-line completed');
+        } else if (i === currentStep - 1) {
+          line.setAttribute('class', 'flow-line active');
+        } else {
+          line.setAttribute('class', 'flow-line');
+        }
+      }
+
+      // Dispara Animação da Partícula de Sinal
+      animateSignal(prevStep, currentStep);
+
+      // Atualiza Painel de Texto com Efeito Fade-In
+      const panelContent = document.querySelector('.explanation-content');
+      panelContent.style.opacity = 0;
+      panelContent.style.transition = 'opacity 0.2s ease';
+      
+      setTimeout(() => {
+        document.getElementById('step-badge').innerText = `Etapa ${currentStep} de ${totalSteps}`;
+        document.getElementById('step-title').innerText = steps[currentStep].title;
+        document.getElementById('step-desc').innerText = steps[currentStep].desc;
+        document.getElementById('step-code').innerText = steps[currentStep].code;
+        panelContent.style.opacity = 1;
+      }, 200);
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        selectStep(currentStep + 1);
+      } else {
+        // Reinicia no final
+        selectStep(1);
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        selectStep(currentStep - 1);
+      }
+    }
+
+    // Função de Animação de Partícula ao longo do Path SVG
+    function animateSignal(fromStep, toStep) {
+      const particle = document.getElementById('signal');
+      
+      // Se for apenas o início ou reinício de passos distantes, não anima a trajetória longa
+      if (Math.abs(fromStep - toStep) !== 1) {
+        // Apenas posiciona a partícula no nó ativo
+        const targetNode = document.getElementById(`node${toStep}`);
+        const circle = targetNode.querySelector('.node-circle');
+        particle.setAttribute('cx', circle.getAttribute('cx'));
+        particle.setAttribute('cy', circle.getAttribute('cy'));
+        return;
+      }
+
+      const isForward = toStep > fromStep;
+      const pathId = isForward ? `line${fromStep}` : `line${toStep}`;
+      const path = document.getElementById(pathId);
+      
+      if (!path) return;
+
+      const pathLength = path.getTotalLength();
+      particle.setAttribute('class', 'signal-particle moving');
+      
+      let startTime = null;
+      const duration = 600; // ms
+
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Se estiver voltando, inverte o progresso
+        const actualProgress = isForward ? progress : (1 - progress);
+        const point = path.getPointAtLength(actualProgress * pathLength);
+        
+        particle.setAttribute('cx', point.x);
+        particle.setAttribute('cy', point.y);
+        
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          // Garante posicionamento final exato
+          const targetNode = document.getElementById(`node${toStep}`);
+          const circle = targetNode.querySelector('.node-circle');
+          particle.setAttribute('cx', circle.getAttribute('cx'));
+          particle.setAttribute('cy', circle.getAttribute('cy'));
+        }
+      }
+      
+      requestAnimationFrame(step);
+    }
+
+    // Inicializa a partícula no primeiro nó
+    window.addEventListener('load', () => {
+      const circle = document.getElementById('node1').querySelector('.node-circle');
+      const particle = document.getElementById('signal');
+      particle.setAttribute('cx', circle.getAttribute('cx'));
+      particle.setAttribute('cy', circle.getAttribute('cy'));
+    });
+  </script>
+</body>
+</html>

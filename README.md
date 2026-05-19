@@ -14,6 +14,10 @@ No config files touched. No mess. No restarts.
 [![license MIT](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![changelog](https://img.shields.io/badge/changelog-v1.0.0-orange?style=flat-square)](CHANGELOG.md)
 
+<br/>
+
+### 🖥️ **[Interactive Website & Visual Flow Guide](https://antonio-abrantes.github.io/claude-code-switcher/)**
+
 </div>
 
 ---
@@ -122,6 +126,14 @@ You can use CCS to **lock** Claude Code to specific models (e.g., forcing it to 
 
 ---
 
+## 🤖 Running Local Models (Ollama, LiteLLM)
+
+CCS enables you to run Claude Code completely locally by routing requests to your own models running on Ollama, using LiteLLM as an Anthropic-compatible translation proxy to translate agentic loops and tool calls.
+
+👉 **[Read the Full Guide on Running Local Models](docs/local-models-guide.md)**
+
+---
+
 ## 📚 Documentation Index
 
 If you want to dive deeper into all the features of CCS, check out the detailed guides in the `docs/` folder:
@@ -130,6 +142,8 @@ If you want to dive deeper into all the features of CCS, check out the detailed 
 - 🛠️ **[Step-by-Step Installation Guide](docs/installation-guide.md)** — Detailed instructions for Windows, macOS, Linux, and VPS environments.
 - 🚀 **[OmniRoute Integration Guide](docs/omniroute-guide.md)** — How to set up and use custom proxy providers like OmniRoute.
 - 📉 **[Cost Optimization Guide](docs/model-optimization-guide.md)** — How to lock models and save API tokens effectively.
+- 🤖 **[Local Models Guide](docs/local-models-guide.md)** — Step-by-step instructions on running Claude Code with Ollama and LiteLLM locally.
+- 🎮 **[Como Funciona? (Guia Interativo)](docs/como-funciona.html)** — An interactive, visual, and non-technical explanation of how CCS intercepts and routes messages (in Portuguese).
 - 🔀 **[About CCS (Under the Hood)](docs/about.md)** — Understand how CCS works and why it was built.
 - 🗑️ **[Uninstall Guide](docs/uninstall.md)** — How to fully remove CCS (with or without keeping your saved profiles).
 - 📜 **[Changelog](CHANGELOG.md)** — View the full release history, updates, and recent enhancements.
