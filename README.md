@@ -32,13 +32,13 @@ curl -fsSL https://raw.githubusercontent.com/antonio-abrantes/claude-code-switch
 
 ### Windows (PowerShell 5 & 7)
 
-Para instalar a versão com suporte a **OmniRoute** e melhorias no Windows:
+To install the version with **OmniRoute** support and Windows-specific improvements:
 
 ```powershell
 .\install-local.ps1
 ```
 
-*(O instalador local já configura o seu PowerShell Profile, destrava a ExecutionPolicy via Registro e injeta a interceptação corretamente tanto no PS5 quanto no PS7)*
+*(The local installer automatically configures your PowerShell Profile, unlocks the ExecutionPolicy via Registry, and properly injects the interception for both PS5 and PS7)*
 
 ---
 
