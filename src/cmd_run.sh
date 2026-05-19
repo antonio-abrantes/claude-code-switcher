@@ -1,5 +1,5 @@
 cmd_run() {
-  local provider="" model="" key="" small_model="" ephemeral=0
+  local provider="" model="" key="" small_model="" custom_url="" ephemeral=0
   local -a extra_args=()
 
   while [[ $# -gt 0 ]]; do
@@ -8,6 +8,7 @@ cmd_run() {
       --model)       model="$2";       shift 2 ;;
       --key)         key="$2";         shift 2 ;;
       --small-model) small_model="$2"; shift 2 ;;
+      --url)         custom_url="$2";  shift 2 ;;
       --ephemeral)   ephemeral=1;      shift ;;
       --)            shift; extra_args+=("$@"); break ;;
       *)             break ;;
@@ -33,20 +34,30 @@ cmd_run() {
     ["deepseek"]="https://api.deepseek.com/anthropic"
     ["openrouter"]="https://openrouter.ai/api"
     ["fireworks"]="https://api.fireworks.ai/inference"
+    ["omniroute"]="${OMNIROUTE_BASE_URL:-http://localhost:20128/v1}"
   )
 
   declare -A PROVIDER_ENV_VARS=(
     ["deepseek"]="DEEPSEEK_API_KEY"
     ["openrouter"]="OPENROUTER_API_KEY"
     ["fireworks"]="FIREWORKS_API_KEY"
+    ["omniroute"]="OMNIROUTE_API_KEY"
   )
 
-  local base_url="${PROVIDER_URLS[$provider]:-}"
-  [[ -z "$base_url" ]] && { echo "error: unknown provider '$provider'" >&2; exit 1; }
+  # --url flag overrides the default provider URL
+  local base_url
+  if [[ -n "$custom_url" ]]; then
+    base_url="$custom_url"
+  else
+    base_url="${PROVIDER_URLS[$provider]:-}"
+    [[ -z "$base_url" ]] && { echo "error: unknown provider '$provider' — use --url to specify a custom URL" >&2; exit 1; }
+  fi
 
   if [[ -z "$key" ]]; then
-    local env_var="${PROVIDER_ENV_VARS[$provider]}"
-    key="${!env_var:-}"
+    local env_var="${PROVIDER_ENV_VARS[$provider]:-}"
+    if [[ -n "$env_var" ]]; then
+      key="${!env_var:-}"
+    fi
     [[ -z "$key" ]] && { echo "error: no API key — pass --key or set \$$env_var" >&2; exit 1; }
   fi
 

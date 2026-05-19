@@ -1,0 +1,13 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://omniroute.yourdomain.com/v1",
+    "ANTHROPIC_AUTH_TOKEN": "",
+    "ANTHROPIC_MODEL": "cx/gpt-5.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "cx/gpt-5.5-xhigh",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "cx/gpt-5.5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "cx/gpt-5.4-mini",
+    "ANTHROPIC_API_KEY": "",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "cx/gpt-5.4-mini",
+    "CLAUDE_CODE_EFFORT_LEVEL": "default"
+  }
+}

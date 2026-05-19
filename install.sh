@@ -6,7 +6,7 @@ INSTALL_DIR="$HOME/.local/bin"
 SCRIPT_NAME="ccs"
 CCS_DIR="$HOME/.config/claude-profiles"
 PROFILES_DIR="$CCS_DIR/profiles"
-RAW_BASE="https://raw.githubusercontent.com/lizzyman04/claude-code-switcher/main"
+RAW_BASE="https://raw.githubusercontent.com/antonio-abrantes/claude-code-switcher/main"
 
 mkdir -p "$INSTALL_DIR"
 mkdir -p "$PROFILES_DIR"
@@ -39,6 +39,8 @@ echo "Building ccs..."
   curl -fsSL "$RAW_BASE/src/cmd_run.sh"
   echo ""
   curl -fsSL "$RAW_BASE/src/cmd_clean.sh"
+  echo ""
+  curl -fsSL "$RAW_BASE/src/cmd_uninstall.sh"
   echo ""
   curl -fsSL "$RAW_BASE/src/_help.sh"
   echo ""
@@ -80,6 +82,7 @@ case "${1:-}" in
       cmd_clean "${@:2}"
     fi
     ;;
+  uninstall) cmd_uninstall ;;
   help|--help|-h) cmd_help ;;
   *)
     if [[ -f "$PROFILES_DIR/$1.json" ]]; then
@@ -97,10 +100,18 @@ chmod +x "$INSTALL_DIR/$SCRIPT_NAME"
 echo "Installing default profiles..."
 
 for provider in anthropic deepseek; do
-  curl -fsSL "$RAW_BASE/profiles/$provider.json" -o "$PROFILES_DIR/$provider.json"
+  dest="$PROFILES_DIR/$provider.json"
+  if [[ ! -f "$dest" ]]; then
+    curl -fsSL "$RAW_BASE/profiles/$provider.json" -o "$dest"
+  else
+    echo "  -> $provider.json (already exists, skipped)"
+  fi
 done
 
-ln -sf "$PROFILES_DIR/anthropic.json" "$CCS_DIR/active"
+# Only set active profile if not already configured
+if [[ ! -e "$CCS_DIR/active" ]]; then
+  ln -sf "$PROFILES_DIR/anthropic.json" "$CCS_DIR/active"
+fi
 
 if ! echo ":$PATH:" | grep -q ":$INSTALL_DIR:"; then
   echo ""

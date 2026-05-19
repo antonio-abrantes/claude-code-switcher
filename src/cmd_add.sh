@@ -10,19 +10,22 @@ cmd_add() {
     ["deepseek"]="DEEPSEEK_API_KEY"
     ["openrouter"]="OPENROUTER_API_KEY"
     ["fireworks"]="FIREWORKS_API_KEY"
+    ["omniroute"]="OMNIROUTE_API_KEY"
   )
 
   declare -A PROVIDER_DEFAULT_MODELS=(
     ["deepseek"]="deepseek-v4-pro"
+    ["omniroute"]="cc/claude-opus-4-6"
   )
 
   read -rp "BASE URL: " base_url
 
   # Detect provider from URL to pre-fill token and model
   local detected_provider=""
-  if [[ "$base_url" == *"deepseek"* ]];   then detected_provider="deepseek"
+  if [[ "$base_url" == *"deepseek"* ]];    then detected_provider="deepseek"
   elif [[ "$base_url" == *"openrouter"* ]]; then detected_provider="openrouter"
   elif [[ "$base_url" == *"fireworks"* ]];  then detected_provider="fireworks"
+  elif [[ "$base_url" == *"omniroute"* ]] || [[ "$base_url" == *":20128"* ]]; then detected_provider="omniroute"
   fi
 
   local auth_token_default="" auth_token_hint="" default_model=""
