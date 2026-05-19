@@ -143,7 +143,6 @@ If you want to dive deeper into all the features of CCS, check out the detailed 
 - 🚀 **[OmniRoute Integration Guide](docs/omniroute-guide.md)** — How to set up and use custom proxy providers like OmniRoute.
 - 📉 **[Cost Optimization Guide](docs/model-optimization-guide.md)** — How to lock models and save API tokens effectively.
 - 🤖 **[Local Models Guide](docs/local-models-guide.md)** — Step-by-step instructions on running Claude Code with Ollama and LiteLLM locally.
-- 🎮 **[Como Funciona? (Guia Interativo)](docs/como-funciona.html)** — An interactive, visual, and non-technical explanation of how CCS intercepts and routes messages (in Portuguese).
 - 🔀 **[About CCS (Under the Hood)](docs/about.md)** — Understand how CCS works and why it was built.
 - 🗑️ **[Uninstall Guide](docs/uninstall.md)** — How to fully remove CCS (with or without keeping your saved profiles).
 - 📜 **[Changelog](CHANGELOG.md)** — View the full release history, updates, and recent enhancements.
