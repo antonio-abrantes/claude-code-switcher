@@ -95,7 +95,7 @@ CCS fully supports Custom APIs like OmniRoute or proxy servers. You can define d
 ```json
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://omniroute.services.softcomia.com/v1",
+    "ANTHROPIC_BASE_URL": "https://omniroute.yourdomain.com/v1",
     "ANTHROPIC_AUTH_TOKEN": "your-key",
     "ANTHROPIC_MODEL": "cx/gpt-5.5"
   }
@@ -138,12 +138,12 @@ CCS enables you to run Claude Code completely locally by routing requests to you
 
 If you want to dive deeper into all the features of CCS, check out the detailed guides in the `docs/` folder:
 
+- 🔀 **[About CCS (Under the Hood)](docs/about.md)** — Understand how CCS works and why it was built.
 - 📖 **[Complete Usage Guide](docs/usage-guide.md)** — Learn about every CCS command, ephemeral mode, and clean mode.
 - 🛠️ **[Step-by-Step Installation Guide](docs/installation-guide.md)** — Detailed instructions for Windows, macOS, Linux, and VPS environments.
 - 🚀 **[OmniRoute Integration Guide](docs/omniroute-guide.md)** — How to set up and use custom proxy providers like OmniRoute.
 - 📉 **[Cost Optimization Guide](docs/model-optimization-guide.md)** — How to lock models and save API tokens effectively.
 - 🤖 **[Local Models Guide](docs/local-models-guide.md)** — Step-by-step instructions on running Claude Code with Ollama and LiteLLM locally.
-- 🔀 **[About CCS (Under the Hood)](docs/about.md)** — Understand how CCS works and why it was built.
 - 🗑️ **[Uninstall Guide](docs/uninstall.md)** — How to fully remove CCS (with or without keeping your saved profiles).
 - 📜 **[Changelog](CHANGELOG.md)** — View the full release history, updates, and recent enhancements.
 
